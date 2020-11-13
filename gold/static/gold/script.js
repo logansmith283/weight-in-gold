@@ -8,6 +8,7 @@ const endDate = 'end_date=' + now.getFullYear() + '-' + (now.getMonth() + 1) + '
 var goldPrice;
 var timeNow = now.toLocaleDateString() + ' ' + now.toLocaleTimeString();
 
+// API request to get price of gold
 fetch(`https://www.quandl.com/api/v3/datasets/LBMA/GOLD?column_index=1&${startDate}&${endDate}&${apiKey}`)
     .then(response => response.json())
     .then(json => {
@@ -22,10 +23,11 @@ fetch(`https://www.quandl.com/api/v3/datasets/LBMA/GOLD?column_index=1&${startDa
             let price = data[0][1];
             goldPrice = price;
 
-            label.textContent = `The Price Of Gold As Of ${date} Is $${price} per Troy Oz.`;
+            label.textContent = `The Price Of Gold As Of ${date} Is $${price.toLocaleString()} per Troy Oz.`;
         }
     });
 
+// function to add divs to the dom
 function addDiv(color, message) {
     var results = document.getElementById('results');
     var div = document.createElement('div');
@@ -39,19 +41,22 @@ function addDiv(color, message) {
     div.appendChild(para);
 }
 
-
+// Make the button clickable
 const button = document.getElementById('compute');
 button.addEventListener('click', compute);
 
+// Compute function
 function compute() {
     let value = document.getElementById('weight').value;
-    value = parseFloat(value);
-    if (typeof value !== 'number') {
+    if (value === '' || isNaN(value)) {
         addDiv('red', `${timeNow} Please Enter A Number And Try Again.`);
     }
     else {
+        value = parseFloat(value);
         let unitFrom = document.getElementById('units').value;
-        console.log(unitFrom.id);
+        let units = document.getElementById('units').selectedIndex;
+        units = document.getElementById('units').options[units].textContent;
+        // API request to convert units to troy ounces
         fetch(`http://localhost:8000/unitconv/convert?from=${unitFrom}&to=t_oz&value=${value}`)
                 .then(response => response.json())
                 .then(json => {
@@ -60,6 +65,7 @@ function compute() {
                     }
                     else {
                         totalVal = (goldPrice * json.value).toFixed(2);
+                        totalVal = parseFloat(totalVal).toLocaleString();
                         message = `At ${timeNow} The price of ${value} ${units} Of Gold Is Worth $${totalVal}`;
                         addDiv('green', message);
                     }
