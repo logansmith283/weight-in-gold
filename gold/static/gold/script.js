@@ -23,7 +23,7 @@ fetch(`https://www.quandl.com/api/v3/datasets/LBMA/GOLD?column_index=1&${startDa
             let price = data[0][1];
             goldPrice = price;
 
-            label.textContent = `The Price Of Gold As Of ${date} Is $${price.toLocaleString()} per Troy Oz.`;
+            label.textContent = `The Price Of Gold As Of ${date} Is ${price.toLocaleString('en-US', {style:'currency', currency: 'USD'})} per Troy Oz.`;
         }
     });
 
@@ -64,9 +64,8 @@ function compute() {
                         addDiv('red', `${timeNow} Error: ${json.error}`);
                     }
                     else {
-                        totalVal = (goldPrice * json.value).toFixed(2);
-                        totalVal = parseFloat(totalVal).toLocaleString();
-                        message = `At ${timeNow} The price of ${value} ${units} Of Gold Is Worth $${totalVal}`;
+                        totalVal = (goldPrice * json.value);
+                        message = `At ${timeNow} The price of ${value} ${units} Of Gold Is Worth ${totalVal.toLocaleString('en-US', {style:'currency', currency: 'USD'})}`;
                         addDiv('green', message);
                     }
                 });
